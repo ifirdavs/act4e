@@ -1,29 +1,65 @@
-from typing import Any, overload, TypeVar
+from abc import ABC, abstractmethod
+from typing import Any, TypeVar, Collection, Iterator, cast
 
 import act4e_interfaces as I
 
-X = TypeVar("X")
+C = TypeVar("C")
+E = TypeVar("E")
 
+# Interfaces are ALL in act4e_interfaces/set_power.py
 
-class SetOfFiniteSubsets(Generic[C, E], Setoid[E], ABC):
-    """A set of subsets."""
-    
+# Implementations
+class MyFiniteSetOfFiniteSubsets(I.FiniteSetOfFiniteSubsets):
+    _elements: Collection[C]
 
+    def __init__(self, elements: Collection[C]):
+        self._elements = list(elements)
 
-    @abstractmethod
+    # SetOfFiniteSubsets
     def contents(self, e: E) -> Iterator[C]:
-        """Returns the contents of an element representing a subset."""
-        pass
-
-    @abstractmethod
+        return iter(e)
     def construct(self, elements: Collection[C]) -> E:
-        """Get the element representing the given subset."""
-        pass
+        return elements
 
-class FiniteSetOfFiniteSubsets(Generic[C, E], SetOfFiniteSubsets[C, E], FiniteSet[E], ABC):
-    pass
+    # FiniteSet
+    def size(self) -> int:
+        return len(self._elements)
+    def elements(self) -> Iterator[E]:
+        return iter(self._elements)
+    
+    # Setoid
+    def contains(self, x: E) -> bool:
+        for y in self._elements:
+            if self.equal(x, y):
+                return True
+        return False
+    def save(self, h: I.IOHelper, x: E) -> I.ConcreteRepr:
+        return cast(I.ConcreteRepr, x)
+    def load(self, h: I.IOHelper, o: I.ConcreteRepr) -> E:
+        return cast(E, o)
+
 
 class SolFiniteMakePowerSet(I.FiniteMakePowerSet):
-    def powerset(self, s: I.FiniteSet[X]) -> I.FiniteSetOfFiniteSubsets[X, Any]:
-        raise NotImplementedError() # implement here
+    def powerset(self, s: I.FiniteSet[C]) -> I.FiniteSetOfFiniteSubsets[C, Any]:
+        elems = list(s.elements())
 
+        def powset(elems):
+            if len(elems) <= 1:
+                yield elems
+                yield []
+            else:
+                for item in powset(elems[1:]):
+                    yield [elems[0]] + item
+                    yield item
+        
+        return MyFiniteSetOfFiniteSubsets([e for e in powset(elems)])
+
+
+
+
+# Test
+# obj = SolFiniteMakePowerSet()
+# print(obj.powerset(MyFiniteSetOfFiniteSubsets([1, 2, 3])))
+
+# for i in obj.powerset(MyFiniteSetOfFiniteSubsets([1, 2, 3])).elements():
+#     print(i, end=" ")

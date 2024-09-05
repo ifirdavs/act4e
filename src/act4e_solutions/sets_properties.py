@@ -4,7 +4,7 @@ import act4e_interfaces as I
 
 X = TypeVar("X")
 
-
+# Ex B.2
 class SolFiniteSetProperties(I.FiniteSetProperties):
     def is_subset(self, a: I.FiniteSet[X], b: I.FiniteSet[X]) -> bool:
         """True if `a` is a subset of `b`."""
@@ -14,10 +14,10 @@ class SolFiniteSetProperties(I.FiniteSetProperties):
                 return False
         return True
         
-    def equal(self, a: FiniteSet[E], b: FiniteSet[E]) -> bool:
+    def equal(self, a: I.FiniteSet[X], b: I.FiniteSet[X]) -> bool:
         return self.is_subset(a, b) and self.is_subset(b, a)
 
-    def is_strict_subset(self, a: FiniteSet[E], b: FiniteSet[E]) -> bool:
+    def is_strict_subset(self, a: I.FiniteSet[X], b: I.FiniteSet[X]) -> bool:
         return self.is_subset(a, b) and not self.is_subset(b, a)
 
 
