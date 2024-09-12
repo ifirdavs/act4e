@@ -9,7 +9,7 @@ class SolFiniteSetProperties(I.FiniteSetProperties):
     def is_subset(self, a: I.FiniteSet[X], b: I.FiniteSet[X]) -> bool:
         """True if `a` is a subset of `b`."""
 
-        for x in a.elements():
+        for x in a.elements():  # all([b.contains(x) for x in a.elements()])
             if not b.contains(x):
                 return False
         return True

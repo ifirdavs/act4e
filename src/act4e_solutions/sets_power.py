@@ -3,8 +3,8 @@ from typing import Any, TypeVar, Collection, Iterator, cast
 
 import act4e_interfaces as I
 
-C = TypeVar("C")
-E = TypeVar("E")
+C = TypeVar("C")    # set A
+E = TypeVar("E")    # Power set elmnt type
 
 # Interfaces are ALL in act4e_interfaces/set_power.py
 

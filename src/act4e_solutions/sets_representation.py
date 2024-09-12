@@ -40,7 +40,8 @@ class SolFiniteSetRepresentation(I.FiniteSetRepresentation):
             raise I.InvalidFormat()
         if not isinstance(data["elements"], list):
             raise I.InvalidFormat()
-        return MyFiniteSet(data["elements"])
+        f = MyFiniteSet([])
+        return MyFiniteSet([f.load(h, _) for _ in data["elements"]])
 
     def save(self, h: I.IOHelper, f: I.FiniteSet[Any]) -> I.FiniteSet_desc:
         all_elements = [f.save(h, _) for _ in f.elements()]
