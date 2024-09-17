@@ -30,21 +30,29 @@ class MyFiniteSet(I.FiniteSet[E]):
     def load(self, h: I.IOHelper, o: I.ConcreteRepr) -> E:
         return cast(E, o)
 
-
+from .sets_product import MyFiniteSetProduct
 class SolFiniteSetRepresentation(I.FiniteSetRepresentation):
     def load(self, h: I.IOHelper, data: I.FiniteSet_desc) -> I.FiniteSet[Any]:
         if not isinstance(data, dict):
             raise I.InvalidFormat()
-        # note: later on the format will be extended
-        if not "elements" in data:
+        if "elements" in data:
+            if not isinstance(data["elements"], list):
+                raise I.InvalidFormat()
+            elements = data["elements"]
+            return MyFiniteSet(elements)
+        elif "product" in data:
+            if not isinstance(data["product"], list):
+                raise I.InvalidFormat()
+            components = [self.load(h, comp) for comp in data["product"]]
+            return MyFiniteSetProduct(components)
+        else:
             raise I.InvalidFormat()
-        if not isinstance(data["elements"], list):
-            raise I.InvalidFormat()
-        f = MyFiniteSet([])
-        return MyFiniteSet([f.load(h, _) for _ in data["elements"]])
-
+        
     def save(self, h: I.IOHelper, f: I.FiniteSet[Any]) -> I.FiniteSet_desc:
-        all_elements = [f.save(h, _) for _ in f.elements()]
+        if isinstance(f, I.FiniteSetProduct):
+            result = [self.save(h, comp) for comp in f.components()]
+            return {"product": result}
+        all_elements = [f.save(h, e) for e in f.elements()]
         return {"elements": all_elements}
 
 

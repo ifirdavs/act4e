@@ -8,7 +8,7 @@ E = TypeVar("E")    # Element of the Product: E = List[C]
 # Interfaces are ALL in act4e_interfaces/set_product.py
 
 # Implementations
-class MyFiniteSetProduct(I.FiniteSetProduct):
+class MyFiniteSetProduct(I.FiniteSetProduct):    # Also, can be written inheriting MyFiniteSet class (every method of MyFiniteSet fits the following imlpementation).
     _components: Sequence[I.FiniteSet[C]]
     _elements: List[E]
 
